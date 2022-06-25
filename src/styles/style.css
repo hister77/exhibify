@@ -1,3 +1,38 @@
-h1 {
+body {
+    max-width: 90%;
+    max-height: 70%;
+    margin: 0 auto;
+}
+
+.main-wrapper > h1 {
     font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+@keyframes fadeaway {
+    0%  { box-shadow: 14px 14px 7px 3px rgba(0, 0, 255, .2); }
+    100%    { box-shadow: 2px 2px 1px 1px rgba(0, 0, 255, .2); }
+}
+
+.content {
+    max-height: 100%;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    margin: 0 auto;
+    border: 1px solid;
+    box-shadow: 2px 2px 1px 1px rgba(0, 0, 255, .2);
+}
+
+.content:hover {
+    animation-name: fadeaway;
+    animation-duration: 1s;
+}
+
+.content > img {
+    padding: 0;
+    display: block;
+    margin:inherit;
+    max-height: 400px;
+    max-width: 600px;
 }
