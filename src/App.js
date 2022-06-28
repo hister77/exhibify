@@ -2,23 +2,28 @@ import React, { Component } from 'react';
 import Main from './main/Main'
 import './styles/style.css'
 
+const ArtCount = ({total}) => <h4>Total Art Count: {total}</h4>
+
 export default class App extends Component {
   state = {
-    watchCount: 0,
-    data: []
+    count: 0,
+    totalArt: 0
   }
+
   addOne = () => {
-    this.setState({ watchCount: this.state.watchCount + 1})
+    this.setState({ count: this.state.count + 1})
   }
-  setData = (data) => {
-    this.setState({ data: data })
+
+  setArtCount = (c) => {
+    this.setState( { totalArt: c })
   }
+
   render() {
     return (
       <div className='main-wrapper'>
-        <h1>Virtual Art Exhibition {this.state.watchCount}</h1>
-        <h4>Total art count: {this.state.data.length}</h4>
-        <Main data={this.state.data} setData={this.setData} increaser={this.addOne}/>
+        <h1 id="view-count">Virtual Art Exhibition {this.state.count}</h1>
+        <ArtCount total={this.state.totalArt}/>
+        <Main viewCount={this.state.count} increaseViewCount={this.addOne} setArtCount={this.setArtCount}/>
       </div>
     )
   }

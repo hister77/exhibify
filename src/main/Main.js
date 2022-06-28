@@ -1,65 +1,82 @@
 import React, { Component } from "react";
 import axios from 'axios';
 
+const Like = (props) => {
+    const onClick = () => {
+        let likedArtObjects = JSON.parse(localStorage.getItem('liked'))
+        const likedArt = { id: props.artData.objectID, title: props.artData.title, author: props.artData.artistDisplayName, date: props.artData.objectDate }
+        if(likedArtObjects.__proto__ === [].__proto__ ) {
+            likedArtObjects.push(likedArt)
+            localStorage.setItem('liked', JSON.stringify(likedArtObjects))
+        }
+        else localStorage.setItem('liked', JSON.stringify([likedArt]))
+    }
+    return <button onClick={onClick}>Like</button>
+  }
+
 export default class Main extends Component {
     constructor(props) {
         super(props)
-        this.data = props.data
-        this.increaser = props.increaser
-        this.setData = props.setData
+        this.increaseViewCount = props.increaseViewCount
+        this.viewCount = props.count
+        this.setArtCount = props.setArtCount
     }
-    state = {}
+    state = {
+       data: [],
+       prevObject: 0
+    }
 
     componentDidMount() {
-        this.pullData()
+        this.pullObjects()
     }
 
-    shouldComponentUpdate(nexProps, nextState) {
-        // Don't update if the next object happens to be the previous one
-        return nextState.objectID===this.state.objectID
+    shouldComponentUpdate(nextProps, nextState) {
+        // Don't update if the next object is the same as the previous one
+        return nextState.prevObject!==nextState.objectID
     }
 
-    randomArt = () => {
-        const idx = Math.floor(Math.random() * this.props.data.length)
-        this.pullData(idx)
-    }
+    randomArt = () => Math.floor(Math.random() * this.state.data.length)
 
-    displayImage = () => {
-        return (
-            <img src={this.state.primaryImage} alt={this.state.title}/> 
-        )
-    }
+    displayImage = () => <img draggable='true' src={this.state.primaryImage} alt={this.state.title}/> 
 
-    pullData = (idx) => {
-        // Didn't want to abuse the API, so I've decided to host the archive object locally
-        // Change it to https://collectionapi.metmuseum.org/public/collection/v1/objects if you don't run your own backend
-        const API_URL = idx
-            ? `https://collectionapi.metmuseum.org/public/collection/v1/objects/${this.props.data.at(idx)}`
-            : 'http://localhost:5000/objects'
-        axios.get(API_URL)
+    pullObjects = () => {
+        axios.get('http://localhost:5000/objects')
             .then((response) => {
-                if(idx) {
-                    this.setState((state, props) => {
+                this.setState((state,props) => {
+                    Object.assign(state, { data: response.data.objectIDs })
+                    this.setArtCount(this.state.data.length)
+                    if(this.props.viewCount === 0) this.pullObject()
+                })
+            })
+    }
+
+    pullObject = (id) => {
+        const idx = id ? id : this.randomArt()
+        axios.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${this.state.data.at(idx)}`)
+            .then((response) => {
+                if(response.data.primaryImage !== '') {
+                    this.setState((state,props) => {
+                        const currObject = state.objectID ? state.objectID : 0
                         Object.assign(state, response.data)
-                        this.props.increaser()
-                        return state
+                        Object.assign(state, { prevObject: currObject })
+                        this.props.increaseViewCount()
                     })
                 }
-                else return this.setData(response.data.objectIDs)
-            })
-            .catch(function (error) {
-                console.log('e');
-                this.setState({ name: 'Error', date: 'none' })
+                else this.pullObject()
             })
     }
 
     render() {
         return (
-            <div className="content" onClick={this.randomArt}>
-                <h3>{this.state.title}</h3>
-                {this.state.primaryImage ? this.displayImage() : <p>{this.state.objectName}</p>}
-                <p>{this.state.artistDisplayName}</p>
-                <p>{this.state.objectDate}</p>
+            <div className="art-wrapper">
+                <div className="content">
+                    <h3>{this.state.title}</h3>
+                    {this.state.primaryImage ? this.displayImage() : <p>{this.state.objectName}</p>}
+                    <p>{this.state.artistDisplayName}</p>
+                    <p>{this.state.objectDate}</p>
+                </div>
+                <button onClick={this.pullObject}>Next</button>
+                <Like artData={this.state}/>
             </div>
         )
     }
