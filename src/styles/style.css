@@ -4,6 +4,10 @@ body {
     margin: 0 auto;
 }
 
+div {
+    border: 0px solid blue;
+}
+
 .main-wrapper > h1 {
     font-family: 'Courier New', Courier, monospace;
     text-align: center;
@@ -28,6 +32,18 @@ body {
 .art-wrapper:hover {
     animation-name: fadeaway;
     animation-duration: 1s;
+}
+
+.history-wrapper {
+    padding: 10px;
+    position: absolute;
+    height: 300px;
+    width: 300px;
+}
+
+li {
+    list-style: none;
+    text-align: left;
 }
 
 .content > img {
