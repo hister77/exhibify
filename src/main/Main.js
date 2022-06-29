@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import Search from '../components/search'
+import History from '../components/history'
 import axios from 'axios';
 
 const Like = (props) => {
     const onClick = () => {
-        let likedArtObjects = JSON.parse(localStorage.getItem('liked'))
+        const likedArtObjects = JSON.parse(localStorage.getItem('liked'))
         const likedArt = { id: props.artData.objectID, title: props.artData.title, author: props.artData.artistDisplayName, date: props.artData.objectDate }
         if(likedArtObjects.__proto__ === [].__proto__ ) {
             likedArtObjects.push(likedArt)
@@ -39,8 +41,10 @@ export default class Main extends Component {
 
     displayImage = () => <img draggable='true' src={this.state.primaryImage} alt={this.state.title}/> 
 
-    pullObjects = () => {
-        axios.get('http://localhost:5000/objects')
+    pullObjects = (params) => {
+        const defaultParams = { params: { medium: 'Paintings', hasImages: true, q: '*' } }
+        const queryParams = { ...defaultParams, ...params }
+        axios.get('https://collectionapi.metmuseum.org/public/collection/v1/search', queryParams)
             .then((response) => {
                 this.setState((state,props) => {
                     Object.assign(state, { data: response.data.objectIDs })
@@ -48,10 +52,13 @@ export default class Main extends Component {
                     if(this.props.viewCount === 0) this.pullObject()
                 })
             })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
-    pullObject = (id) => {
-        const idx = id ? id : this.randomArt()
+    pullObject = () => {
+        const idx = this.randomArt()
         axios.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${this.state.data.at(idx)}`)
             .then((response) => {
                 if(response.data.primaryImage !== '') {
@@ -77,6 +84,8 @@ export default class Main extends Component {
                 </div>
                 <button onClick={this.pullObject}>Next</button>
                 <Like artData={this.state}/>
+                <Search />
+                <History />
             </div>
         )
     }

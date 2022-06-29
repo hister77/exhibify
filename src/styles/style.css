@@ -2,6 +2,12 @@ body {
     max-width: 90%;
     max-height: 70%;
     margin: 0 auto;
+    background-color:rgb(40, 45, 49);
+    color: aliceblue;
+}
+
+div {
+    border: 0px solid blue;
 }
 
 .main-wrapper > h1 {
@@ -21,13 +27,25 @@ body {
     text-align: center;
     position: relative;
     margin: 0 auto;
-    border: 1px solid;
+    border: 0px solid;
     box-shadow: 2px 2px 1px 1px rgba(0, 0, 255, .2);
 }
 
 .art-wrapper:hover {
     animation-name: fadeaway;
     animation-duration: 1s;
+}
+
+.history-wrapper {
+    padding: 10px;
+    position: absolute;
+    height: 300px;
+    width: 300px;
+}
+
+li {
+    list-style: none;
+    text-align: left;
 }
 
 .content > img {
