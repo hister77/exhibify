@@ -1,92 +1,130 @@
-import React, { Component } from "react";
-import Search from '../components/search'
+import React, { useState, useEffect, useContext } from "react";
 import History from '../components/history'
-import axios from 'axios';
+import { AppContext } from '../App'
 
-const Like = (props) => {
-    const onClick = () => {
-        const likedArtObjects = JSON.parse(localStorage.getItem('liked'))
-        const likedArt = { id: props.artData.objectID, title: props.artData.title, author: props.artData.artistDisplayName, date: props.artData.objectDate }
-        if(likedArtObjects.__proto__ === [].__proto__ ) {
-            likedArtObjects.push(likedArt)
-            localStorage.setItem('liked', JSON.stringify(likedArtObjects))
+const Like = ({ artObject, setLastLiked }) => {
+
+    const handleLike = () => {
+        const likedArtObjects = JSON.parse(localStorage.getItem('liked')) || []
+        let likedArt = {}
+        Object.assign(likedArt, { id: artObject.objectID,
+                               url: artObject.primaryImage,
+                               title: artObject.title,
+                               author: artObject.artistDisplayName,
+                               date: artObject.objectDate })
+        if(likedArtObjects.length > 0) {
+            if(!likedArtObjects.find(v=>v.id===likedArt.id)) {
+                likedArtObjects.push(likedArt)
+                localStorage.setItem('liked', JSON.stringify(likedArtObjects))
+                
+            }
+            setLastLiked(likedArtObjects.slice(likedArtObjects.length-10))
         }
-        else localStorage.setItem('liked', JSON.stringify([likedArt]))
+        else {
+            localStorage.setItem('liked', JSON.stringify([likedArt]))
+            setLastLiked([likedArt])
+        }
     }
-    return <button onClick={onClick}>Like</button>
-  }
+    return <button onClick={handleLike}>Like</button>
 
-export default class Main extends Component {
-    constructor(props) {
-        super(props)
-        this.increaseViewCount = props.increaseViewCount
-        this.viewCount = props.count
-        this.setArtCount = props.setArtCount
+}
+
+const Content = ({ artObject, rollID, setLastLiked }) => {
+
+    const displayImage = () => {
+        return <img src={artObject.primaryImage} alt={artObject.title}/>
     }
-    state = {
-       data: [],
-       prevObject: 0
-    }
+    let { artistDisplayName, objectDate } = artObject
+    objectDate = objectDate && "(" + objectDate + ")"
 
-    componentDidMount() {
-        this.pullObjects()
-    }
+    return (
+    <>
+        <div className="content">
+            <h3>{artObject.title}</h3>
+            {artObject.primaryImage ? displayImage() : <p>{artObject.title}</p>}
+            <p>{`${artistDisplayName} ${objectDate}`}</p>
+        </div>
+        <div className="action-box">
+            <button onClick={rollID}>Next</button>
+            <Like artObject={artObject} setLastLiked={setLastLiked}/>
+        </div>
+    </>
+    )
+}
 
-    shouldComponentUpdate(nextProps, nextState) {
-        // Don't update if the next object is the same as the previous one
-        return nextState.prevObject!==nextState.objectID
-    }
+export default function Main() {
 
-    randomArt = () => Math.floor(Math.random() * this.state.data.length)
+    // const {artCount, countCount, setArtCount, setcountCount} = useContext(AppContext)
+    const {req, viewCount, setViewCount, showHistory, setShowHistory, setArtCount} = useContext(AppContext)
+    const [data, setData] = useState([437041])
+    const [params, setParams] = useState({ params: { medium: 'Paintings', hasImages: true, q: '*' } })
+    const [artObject, setArtObject] = useState({})
+    const [prevArtObject, setPrevArtObject] = useState({})
+    const [randArtID, setRandArtID] = useState(0)
+    const [artID, setArtID] = useState(27)
+    const [lastLiked, setLastLiked] = useState([])
+    const [n, setN] = useState(6)
 
-    displayImage = () => <img draggable='true' src={this.state.primaryImage} alt={this.state.title}/> 
-
-    pullObjects = (params) => {
-        const defaultParams = { params: { medium: 'Paintings', hasImages: true, q: '*' } }
-        const queryParams = { ...defaultParams, ...params }
-        axios.get('https://collectionapi.metmuseum.org/public/collection/v1/search', queryParams)
-            .then((response) => {
-                this.setState((state,props) => {
-                    Object.assign(state, { data: response.data.objectIDs })
-                    this.setArtCount(this.state.data.length)
-                    if(this.props.viewCount === 0) this.pullObject()
-                })
+    useEffect(() => {
+        const pullObjects = async () => {
+            const response = await req.get('/search', params)
+            return response.data.objectIDs
+        }
+        pullObjects()
+            .then(art_objects => {
+                setData(art_objects)
+                setArtCount(art_objects.length)
             })
-            .catch((error) => {
-                console.error(error)
-            })
-    }
+            .catch(err => console.log(err))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params])
 
-    pullObject = () => {
-        const idx = this.randomArt()
-        axios.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${this.state.data.at(idx)}`)
-            .then((response) => {
-                if(response.data.primaryImage !== '') {
-                    this.setState((state,props) => {
-                        const currObject = state.objectID ? state.objectID : 0
-                        Object.assign(state, response.data)
-                        Object.assign(state, { prevObject: currObject })
-                        this.props.increaseViewCount()
-                    })
+    useEffect(() => {
+        pullObject(data.at(randArtID))
+            .then((art_object) => {
+                if(art_object.primaryImage !== "") {
+                    setArtObject(art_object)
+                    setViewCount(viewCount => viewCount + 1)
                 }
-                else this.pullObject()
+                else rollID()
             })
+            .catch(err => console.log(err))
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [randArtID])
+
+    useEffect(() => {
+        if (viewCount < 1) return
+        pullObject(artID)
+            .then((art_object) => {
+                setArtObject(art_object)
+                setViewCount(countCount => countCount + 1)
+            })
+            .catch(err => console.log(err))
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [artID])
+
+    const pullObject = async function (id) {
+        const response = await req.get(`/objects/${id}`)
+        return response.data
     }
 
-    render() {
-        return (
-            <div className="art-wrapper">
-                <div className="content">
-                    <h3>{this.state.title}</h3>
-                    {this.state.primaryImage ? this.displayImage() : <p>{this.state.objectName}</p>}
-                    <p>{this.state.artistDisplayName}</p>
-                    <p>{this.state.objectDate}</p>
-                </div>
-                <button onClick={this.pullObject}>Next</button>
-                <Like artData={this.state}/>
-                <Search />
-                <History />
-            </div>
-        )
+    const rollID = () => {
+        setRandArtID(Math.floor(Math.random() * data.length))
     }
+    
+    return (
+        <div className="art-wrapper">
+            {showHistory
+                ? <History
+                    lastLiked={lastLiked}
+                    setLastLiked={setLastLiked}
+                    setArtID={setArtID}
+                    setShowHistory={setShowHistory}
+                    n={n}
+                    setN={setN}
+                    />
+                : <Content artObject={artObject} rollID={rollID} setLastLiked={setLastLiked} />
+            }
+        </div>
+    )
 }
