@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
-import axios from 'axios'
+import React, { useState, useRef } from 'react'
+import req from '../api/request'
 
 const Search = () => {
 
     const [IDs, setIDs] = useState([]);
 
     const searchGallery = () => {
-        axios.get('https://collectionapi.metmuseum.org/public/collection/v1/search', { params: { q: ref.current.valueOf()} })
+        req.get('/search', { params: { q: ref.current.valueOf()} })
             .then((response) => {
                 setIDs(response.data.objectIDs.slice(0,10))
             })

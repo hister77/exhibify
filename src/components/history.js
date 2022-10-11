@@ -10,23 +10,28 @@ const groupedLikes = (favs, n=6) => {
     return columns
 }
 
-const History = ({ lastLiked, setLastLiked, setArtID, setShowHistory, n, setN }) => {
-    //const likedArtObjects = JSON.parse(localStorage.getItem('liked'))
-    //const lastLiked = likedArtObjects !== null ? likedArtObjects.slice(likedArtObjects.length-10) : likedArtObjects;
-    // const { liked } = props
+const History = ({ favorites, setArtID, setShowHistory }) => {
+
+    const [lastFavs, setLastFavs] = useState([])
+    const [n, setN] = useState(6)
 
     useEffect(() => {
-        const likedArtObjects = JSON.parse(localStorage.getItem('liked'))
-        Array.isArray(likedArtObjects) && setLastLiked(likedArtObjects.slice(likedArtObjects.length-n).reverse())
-    }, [setLastLiked, n])
+        const likedArtObjects = [...favorites]
+        let items = n < likedArtObjects.length ? n : likedArtObjects.length
+        Array.isArray(likedArtObjects) && setLastFavs(likedArtObjects.slice(likedArtObjects.length-items).reverse())
+    }, [favorites, n])
 
     function handleClick(e) {
-        const id = e.target.id.replace(/^piece_+/, '');
-        setArtID(id);
-        setShowHistory(false);
+        const id = e.target.id.replace(/^piece_+/, '')
+        setArtID(id)
+        setShowHistory(false)
     }
 
-    const handleMore = () => setN(n => n + 4)
+    const handleMore = () => setN(l => l + 4)
+    const handleLess = () => setN((l) => { 
+        if(n - 4 < 1) return 0
+        return n 
+    })
 
     const artBox = (art) => {
         return (
@@ -43,7 +48,7 @@ const History = ({ lastLiked, setLastLiked, setArtID, setShowHistory, n, setN })
 
     return (
         <div className="history-wrapper">
-            {groupedLikes(lastLiked).map((col, i) => {
+            {groupedLikes(lastFavs).map((col, i) => {
                 return (
                 <div key={i} className="column">
                     {col.map((art) => artBox(art))}
@@ -51,6 +56,7 @@ const History = ({ lastLiked, setLastLiked, setArtID, setShowHistory, n, setN })
                 )
             })}
         <button onClick={handleMore}>more...</button>
+        <button onClick={handleLess}>less...</button>
         </div>
     )
 }
