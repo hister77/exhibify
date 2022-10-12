@@ -19,11 +19,16 @@ function App() {
     localStorage.setItem('liked', JSON.stringify(favorites))
   },[favorites])
 
+  const mainHeader = (showHistory, viewed) => {
+    const string = showHistory ? 'History' : `Exhibit ${viewed}`
+    return <h1>{string}</h1>
+  }
+
   return (
     <>
       <header className='header-wrapper'>
         <div className='header-left'>{data.length} exhibits</div>
-        <div className='header-middle'><h1>Exhibit {viewCount}</h1></div>
+        <div className='header-middle'>{mainHeader(showHistory, viewCount)}</div>
         <div className='header-right'>
           <button className="switch-button" onClick={handleSwitch}>{showHistory ? 'Favorites': 'Explore Mode'}</button>
         </div>

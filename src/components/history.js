@@ -28,10 +28,7 @@ const History = ({ favorites, setArtID, setShowHistory }) => {
     }
 
     const handleMore = () => setN(l => l + 4)
-    const handleLess = () => setN((l) => { 
-        if(n - 4 < 1) return 0
-        return n 
-    })
+    const handleLess = () => setN((l) => (l - 4 < 1 ? 0 : l - 4) )
 
     const artBox = (art) => {
         return (

@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
 const LoadingSpinner = lazy(() => import('./loading'))
 
-const Like = ({ artObject, favorites, setFavorites, liked, setLiked }) => {
+const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
     function handleLike () {
 
@@ -14,20 +14,20 @@ const Like = ({ artObject, favorites, setFavorites, liked, setLiked }) => {
             author: artObject.artistDisplayName,
             date: artObject.objectDate }
                                
-        if(!liked && !tempFavs.find(v=>v.id===likedArt.id)) {
+        if(!like && !tempFavs.find(v=>v.id===likedArt.id)) {
             tempFavs.push(likedArt)
             setFavorites(tempFavs)
-            setLiked(true)
+            setLike(true)
             return
         }
         tempFavs = tempFavs.filter(v=>v.id!==likedArt.id)
         setFavorites(tempFavs)
-        setLiked(false)
+        setLike(false)
         
         return
     }
     
-    return <button className="like" onClick={handleLike}>{liked ? 'Unlike' : 'Like'}</button>
+    return <button className="like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
 
 }
 
@@ -42,18 +42,17 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
         title: "Loading...",
         artist: '',
         date: '',
-        image: '',
         style: {
             display: 'none'
         }
     }
     const [exhibit, setExhibit] = useState(exhibitTemplate)
-    const [liked, setLiked] = useState(false)
+    const [like, setLike] = useState(false)
 
     useEffect(() => {
-        if(favorites.find(fav=>fav.id===artObject.objectID)) setLiked(true)
+        favorites.find(fav=>fav.id===artObject.objectID) && setLike(true)
         return () => {
-            setLiked(false)
+            setLike(false)
         };
     },[favorites, artObject.objectID])
 
@@ -63,7 +62,6 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
             title: artObject.title,
             artist: artObject.artistDisplayName,
             date: artObject.objectDate,
-            image: artObject.primaryImage,
             style: {
                 display: 'inline-block'
             }
@@ -84,7 +82,7 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
         </div>
         <div className="action-box">
             <button className='random' onClick={preLoader}>Random</button>
-            <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} liked={liked} setLiked={setLiked}/>
+            <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} like={like} setLike={setLike}/>
         </div>
     </Suspense>
     )
