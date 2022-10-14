@@ -21,38 +21,82 @@ button {
 .header-wrapper {
     position: relative;
     height: 10vh;
+    margin: 0 0.5rem 0 0.5rem;
 }
 .header-wrapper > div {
-    position: absolute;
     display: inline-block;
+    position: absolute;
 }
 .header-middle {
+    max-width: 25%;
     left: 50%;
     bottom: 0;
     transform: translate(-50%, 0);
 }
-.header-right {
-    right: 0;
+.header-left {
+    max-width: 85%;
 }
-.header-wrapper h1 {
-    margin: 0 auto;
-    font-size: 1.3rem;
+.header-left > span {
+    display: inline-block;
+    width: fit-content;
+}
+.header-right {
+    right: 0em;
 }
 .header-wrapper button, h1, span, input {
     text-align: center;
     margin: auto 0 auto 0;
 }
+.header-wrapper h1 {
+    font-size: 1.3rem;
+}
 .header-wrapper input {
     height: 1.5rem;
-    width: 20px;
 }
-.switch-button {
+.mode-button {
+    display: block;
     color: aliceblue;
     border: 4px solid radial-gradient(circle at -4% -12.9%, rgb(74, 98, 110) 0.3%, rgb(30, 33, 48) 90.2%);
     background: radial-gradient(circle at -4% -12.9%, rgb(74, 98, 110) 0.3%, rgb(30, 33, 48) 90.2%);
     border-radius: 0.35rem;
     font-size: 0.8rem;
     height: 25px;
+}
+
+.filter-form {
+    display: inline-block;
+    margin: 0 auto 0 1em;
+    max-width: 80%;
+}
+.filter-form input {
+    border-radius: 0.35rem;
+}
+.filter-form input[type=submit] {
+    border: 0px;
+    opacity: 0.9;
+    margin-left: 0.5em;
+    padding: 0 0.5em 0 0.5em;
+    width: fit-content;
+    display: inline-block;
+}
+.filter-wrapper {
+    position: absolute;
+    left: 0;
+    margin-top: 0.5em;
+}
+#filter {
+    display: inline-block;
+    min-width: 8em;
+    max-width: fit-content;
+    opacity: 0.27;
+    background: linear-gradient(118.4deg, rgb(122, 35, 52) 27.5%, rgb(62, 9, 27) 92.7%);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    color: white;
+    border: 0px;
+}
+#filter:focus {
+    opacity: 0.6;
+    border: 0px solid white;
 }
 
 .main-wrapper {
@@ -101,7 +145,6 @@ button {
 .action-box> button:active {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
-
 
 /* History */
 .history-wrapper {

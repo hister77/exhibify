@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import History from '../components/history'
 import { AppContext } from '../App'
-import req from '../api/request'
+import History from '../components/history'
 import Exhibit from '../components/content'
+import req from '../api/request'
 
 export default function Main() {
 
-    const { data, setData, viewCount, setViewCount, showHistory, setShowHistory, favorites, setFavorites } = useContext(AppContext)
-    const [params, setParams] = useState({ params: { medium: 'Paintings', hasImages: true, q: '*' } })
+    const { data, params, setData, setViewCount, showHistory, setShowHistory, favorites, setFavorites } = useContext(AppContext)
     const [artObject, setArtObject] = useState({})
     const [artID, setArtID] = useState(null)
 
@@ -16,53 +15,43 @@ export default function Main() {
     }
 
     useEffect(() => {
-        const fetchObjects = async () => {
+        (async () => {
             const response = await req.get('/search', params)
-            return response.data.objectIDs
-        }
-        fetchObjects()
-            .then(art_objects => {
-                setData(art_objects)
-                return Promise.resolve(art_objects)
-            })
-            .then((art_objects) => {
-                if(viewCount < 1) setArtID(art_objects.at(Math.floor(Math.random() * art_objects.length)))
-                return Promise.resolve()
-            })
-            .catch(err => console.log(err))
-    }, [params])
+            const art_objects = response.data.objectIDs
+            setData(art_objects)
+            setArtID(art_objects.at(Math.floor(Math.random() * art_objects.length)))
+        })()
+    }, [params.params.q])
 
     useEffect(() => {
-        const fetchObject = async function (id) {
-            const response = await req.get(`/objects/${id}`)
-            return response
+        let timer;
+        if(data.length < 1 || artID < 0) return
+        (async () => {
+            const response = await req.get(`/objects/${artID}`)
+            const art_object = await response.data
+            if(art_object.primaryImage !== "") {
+                setArtObject(art_object)
+                setViewCount(viewCount => viewCount + 1)
+            }
+            else {
+                timer = setTimeout(() => {
+                    drawID()
+                }, 2000)
+            }
+        })()
+        return () => {
+            clearTimeout(timer)
         }
-        if (data.length > 0) {
-            fetchObject(artID)
-                .then((res) => {
-                    if(res.data.primaryImage !== "") {
-                        setArtObject(res.data)
-                        setViewCount(viewCount => viewCount + 1)
-                    }
-                    else drawID()
-                    return Promise.resolve()
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        }
-    }, [artID])
+    }, [data, artID])
     
     return (
-        <div className="art-wrapper">
-            {showHistory
-                ? <History
-                    favorites={favorites}
-                    setArtID={setArtID}
-                    setShowHistory={setShowHistory}
-                  />
-                : <Exhibit artObject={artObject} drawID={drawID} favorites={favorites} setFavorites={setFavorites} />
-            }
-        </div>
+        <main className='main-wrapper'>
+            <div className="art-wrapper">
+                {showHistory
+                    ? <History favorites={favorites} setArtID={setArtID} setShowHistory={setShowHistory} />
+                    : <Exhibit artObject={artObject} drawID={drawID} favorites={favorites} setFavorites={setFavorites} />
+                }
+            </div>
+        </main>
     )
 }
