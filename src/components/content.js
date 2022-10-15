@@ -18,13 +18,12 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
             tempFavs.push(likedArt)
             setFavorites(tempFavs)
             setLike(true)
-            return
         }
-        tempFavs = tempFavs.filter(v=>v.id!==likedArt.id)
-        setFavorites(tempFavs)
-        setLike(false)
-        
-        return
+        else {
+            tempFavs = tempFavs.filter(v=>v.id!==likedArt.id)
+            setFavorites(tempFavs)
+            setLike(false)
+        }
     }
     
     return <button className="like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
