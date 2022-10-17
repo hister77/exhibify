@@ -6,7 +6,7 @@ import req from '../api/request'
 
 export default function Main() {
 
-    const { data, params, setData, setViewCount, showHistory, setShowHistory, favorites, setFavorites } = useContext(AppContext)
+    const { data, params, setData, artCount, setArtCount, setViewCount, showHistory, setShowHistory, favorites, setFavorites } = useContext(AppContext)
     const [artObject, setArtObject] = useState({})
     const [artID, setArtID] = useState(null)
 
@@ -19,13 +19,15 @@ export default function Main() {
             const response = await req.get('/search', params)
             const art_objects = response.data.objectIDs
             setData(art_objects)
-            setArtID(art_objects.at(Math.floor(Math.random() * art_objects.length)))
+            setArtCount(response.data.total)
+            if(response.data.total > 0)
+                setArtID(art_objects.at(Math.floor(Math.random() * art_objects.length)))
         })()
     }, [params.params.q])
 
     useEffect(() => {
         let timer;
-        if(data.length < 1 || artID < 0) return
+        if(artCount < 1 || artID < 0) return
         (async () => {
             const response = await req.get(`/objects/${artID}`)
             const art_object = await response.data

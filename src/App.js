@@ -8,6 +8,7 @@ const AppContext = createContext(null)
 function App() {
 
   const [data, setData] = useState([])
+  const [artCount, setArtCount] = useState(0)
   const [params, setParams] = useState({ params: { medium: 'Paintings', hasImages: true, q: '*' } })
   const [viewCount, setViewCount] = useState(0)
   const [showHistory, setShowHistory] = useState(false)
@@ -18,6 +19,7 @@ function App() {
       <AppContext.Provider value={{
           data, setData,
           params, setParams,
+          artCount, setArtCount,
           viewCount, setViewCount,
           showHistory, setShowHistory,
           favorites, setFavorites }}>

@@ -3,15 +3,21 @@ import { AppContext } from '../App'
 
 export default function Header() {
 
-    const { data, params, setParams, viewCount, showHistory, setShowHistory, favorites  } = useContext(AppContext)
+    const { params, setParams, viewCount, showHistory, setShowHistory, favorites, artCount  } = useContext(AppContext)
     const [tempParams, setTempParams] = useState({ medium: 'Paintings', hasImages: true, q: '*' })
+    const [filterMode, setFilterMode] = useState('Filter')
     const refFilter = useRef('*')
 
     const handleSwitchMode = () => showHistory ? setShowHistory(false) : setShowHistory(true)
 
     const handleSubmitSettings = (e) => {
-      setParams(values => ( { params: {...values.params, ...tempParams } } ))
-      e.preventDefault();
+      if(tempParams.q !== params.params.q) {
+        setParams(values => ( { params: {...values.params, ...tempParams } } ))
+      }
+      else {
+        setParams({ params: { medium: 'Paintings', hasImages: true, q: '*' } })
+      }
+        e.preventDefault();
     }
   
     const handleChangeSettings = (e) => {
@@ -20,12 +26,21 @@ export default function Header() {
       setTempParams(values => ({...values, [name]: value})) 
     }
   
-    const handleFocus = (e) => e.target.value = ''
-    const handleBlur = (e) => e.target.value = params.params.q === '*' ? '' : params.params.q
+    const handleFocus = (e) => {
+      e.target.value = params.params.q
+    }
+    const handleBlur = (e) => {
+      e.target.value = params.params.q === '*' ? '' : params.params.q
+    }
   
     useEffect(() => {
         refFilter.current.value = params.params.q
     },[params.params.q])
+
+    useEffect(() => {
+      if(refFilter.current.value !== params.params.q || refFilter.current.value === '*') setFilterMode('Filter')
+      else setFilterMode('Clear')
+    })
   
     useEffect(() => {
       localStorage.setItem('liked', JSON.stringify(favorites))
@@ -37,13 +52,17 @@ export default function Header() {
     }
 
     return (
-    <>
     <header className='header-wrapper'>
         <div className='header-left'>
-            <span>{`${data.length} exhibits`}</span>
+            <span>{`${artCount} exhibits`}</span>
             <form onSubmit={handleSubmitSettings} className='filter-form'>
-                <input type="text" id='filter' name='q' onChange={handleChangeSettings} onFocus={handleFocus} onBlur={handleBlur} ref={refFilter}/>
-                <input type="submit" value='Filter' />
+                <input type="text" id='filter' name='q'
+                       onChange={handleChangeSettings}
+                       onFocus={handleFocus}
+                       onBlur={handleBlur}
+                       ref={refFilter}
+                />
+                <input type="submit" value={filterMode} />
             </form>
         </div>
         <div className='header-middle'>{mainHeader(showHistory, viewCount)}</div>
@@ -51,6 +70,5 @@ export default function Header() {
             <button className="mode-button" onClick={handleSwitchMode}>{showHistory ? 'Favorites': 'Explore Mode'}</button>
         </div>
     </header>
-    </>
   )
 }

@@ -87,7 +87,7 @@ button {
 #filter {
     display: inline-block;
     min-width: 8em;
-    max-width: fit-content;
+    max-width: 4em;
     opacity: 0.27;
     background: linear-gradient(118.4deg, rgb(122, 35, 52) 27.5%, rgb(62, 9, 27) 92.7%);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
