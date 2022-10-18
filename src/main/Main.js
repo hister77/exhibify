@@ -3,10 +3,11 @@ import { AppContext } from '../App'
 import History from '../components/history'
 import Exhibit from '../components/content'
 import req from '../api/request'
+import { artShortObj } from "../utils/art";
 
 export default function Main() {
 
-    const { data, params, setData, artCount, setArtCount, setViewCount, showHistory, setShowHistory, favorites, setFavorites } = useContext(AppContext)
+    const { data, params, setData, artCount, setArtCount, setViewCount, showHistory, setShowHistory, favorites, setFavorites, sessionData, setSessionData } = useContext(AppContext)
     const [artObject, setArtObject] = useState({})
     const [artID, setArtID] = useState(null)
 
@@ -20,8 +21,9 @@ export default function Main() {
             const art_objects = response.data.objectIDs
             setData(art_objects)
             setArtCount(response.data.total)
-            if(response.data.total > 0)
+            if(response.data.total > 0) {
                 setArtID(art_objects.at(Math.floor(Math.random() * art_objects.length)))
+            }
         })()
     }, [params.params.q])
 
@@ -33,6 +35,12 @@ export default function Main() {
             const art_object = await response.data
             if(art_object.primaryImage !== "") {
                 setArtObject(art_object)
+                setSessionData((art) => {
+                    const arr = [...art]
+                    const currentArt = artShortObj(art_object)
+                    if(!art.find(el => el.id===currentArt.id)) arr.push(currentArt)
+                    return arr
+                })
                 setViewCount(viewCount => viewCount + 1)
             }
             else {
@@ -51,7 +59,12 @@ export default function Main() {
             <div className="art-wrapper">
                 {showHistory
                     ? <History favorites={favorites} setArtID={setArtID} setShowHistory={setShowHistory} />
-                    : <Exhibit artObject={artObject} drawID={drawID} favorites={favorites} setFavorites={setFavorites} />
+                    : <Exhibit artObject={artObject}
+                               drawID={drawID}
+                               setArtID={setArtID}
+                               favorites={favorites}
+                               setFavorites={setFavorites}
+                               sessionData={sessionData} />
                 }
             </div>
         </main>

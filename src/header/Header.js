@@ -40,6 +40,7 @@ export default function Header() {
     useEffect(() => {
       if(refFilter.current.value !== params.params.q || refFilter.current.value === '*') setFilterMode('Filter')
       else setFilterMode('Clear')
+      return () => { setFilterMode('Filter') }
     })
   
     useEffect(() => {
