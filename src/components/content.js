@@ -37,14 +37,12 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
 }
 
-const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit }) => {
-    const [nav, setNav] = useState( {prev: null}, {next: null} )
+const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit, nav }) => {
+
 
     const handleOption = (e) => {
-        const idx = sessionData.findIndex(el=>el.id===artObject.objectID)
-
+        
         setExhibit(exhibitTemplate)
-        setNav( { prev: sessionData[idx-1], next: sessionData[idx+1] } )
 
         switch (e.target.id) {
             case 'random': drawID(); break;
@@ -63,12 +61,12 @@ const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit }) => 
     )
 }
 
-const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, sessionData }) => {
+const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, sessionData, nav }) => {
 
     const displayImage = (art, exh) => {
         return <img src={art.primaryImage} alt={exh.title} style={ exh.style } onLoad={imageLoaded} />
     }
-
+  
     const [exhibit, setExhibit] = useState(exhibitTemplate)
     const [like, setLike] = useState(false)
 
@@ -79,9 +77,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
         };
     },[favorites, artObject.objectID])
 
-    useEffect(() => {
-        sessionStorage.setItem('viewed', JSON.stringify(sessionData))
-    }, [sessionData])
+
 
     const imageLoaded = (e) => {
         setExhibit({ ...exhibitTemplate,
@@ -103,7 +99,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
             <p>{`${exhibit.artist} ${exhibit.date}`}</p>
         </div>
         <div className="action-box">
-            <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit}/>
+            <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit} nav={nav}/>
             <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} like={like} setLike={setLike}/>
         </div>
     </Suspense>

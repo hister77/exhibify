@@ -10,6 +10,7 @@ export default function Main() {
     const { data, params, setData, artCount, setArtCount, setViewCount, showHistory, setShowHistory, favorites, setFavorites, sessionData, setSessionData } = useContext(AppContext)
     const [artObject, setArtObject] = useState({})
     const [artID, setArtID] = useState(null)
+    const [nav, setNav] = useState( {prev: null}, {next: null} )
 
     const drawID = () => {
         setArtID(data.at(Math.floor(Math.random() * data.length)))
@@ -35,9 +36,9 @@ export default function Main() {
             const art_object = await response.data
             if(art_object.primaryImage !== "") {
                 setArtObject(art_object)
+                const currentArt = artShortObj(art_object)
                 setSessionData((art) => {
-                    const arr = [...art]
-                    const currentArt = artShortObj(art_object)
+                    let arr = [...art]
                     if(!art.find(el => el.id===currentArt.id)) arr.push(currentArt)
                     return arr
                 })
@@ -54,6 +55,12 @@ export default function Main() {
         }
     }, [data, artID])
     
+    useEffect(() => {
+        sessionStorage.setItem('viewed', JSON.stringify(sessionData))
+        const idx = sessionData.findIndex(el=>el.id===artObject.objectID)
+        setNav( { prev: sessionData[idx-1], next: sessionData[idx+1] } )
+    }, [sessionData, artObject])
+
     return (
         <main className='main-wrapper'>
             <div className="art-wrapper">
@@ -64,7 +71,8 @@ export default function Main() {
                                setArtID={setArtID}
                                favorites={favorites}
                                setFavorites={setFavorites}
-                               sessionData={sessionData} />
+                               sessionData={sessionData}
+                               nav={nav} />
                 }
             </div>
         </main>
