@@ -1,5 +1,17 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
+import { artShortObj } from '../utils/art'
+
 const LoadingSpinner = lazy(() => import('./loading'))
+
+const exhibitTemplate = {
+    id: null,
+    title: "Loading...",
+    artist: '',
+    date: '',
+    style: {
+        display: 'none'
+    }
+}
 
 const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
@@ -7,12 +19,7 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
         let tempFavs = [...favorites]
 
-        const likedArt = {
-            id: artObject.objectID,
-            url: artObject.primaryImage,
-            title: artObject.title,
-            author: artObject.artistDisplayName,
-            date: artObject.objectDate }
+        const likedArt = artShortObj(artObject)
                                
         if(!like && !tempFavs.find(v=>v.id===likedArt.id)) {
             tempFavs.push(likedArt)
@@ -30,21 +37,36 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
 }
 
-const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
+const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit, nav }) => {
+
+
+    const handleOption = (e) => {
+        
+        setExhibit(exhibitTemplate)
+
+        switch (e.target.id) {
+            case 'random': drawID(); break;
+            case 'prev': (nav.prev && setArtID(nav.prev.id)); break;
+            case 'next': (nav.next && setArtID(nav.next.id)); break;
+            default: break;
+        }
+    }
+
+    return (
+    <>
+        {['prev', 'next', 'random'].map((el) => {
+            return <button key={el} id={el} className='action-button' onClick={handleOption}>{el[0].toUpperCase()+el.slice(1)}</button>
+        })}
+    </>
+    )
+}
+
+const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, sessionData, nav }) => {
 
     const displayImage = (art, exh) => {
         return <img src={art.primaryImage} alt={exh.title} style={ exh.style } onLoad={imageLoaded} />
     }
-
-    const exhibitTemplate = {
-        id: null,
-        title: "Loading...",
-        artist: '',
-        date: '',
-        style: {
-            display: 'none'
-        }
-    }
+  
     const [exhibit, setExhibit] = useState(exhibitTemplate)
     const [like, setLike] = useState(false)
 
@@ -54,6 +76,8 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
             setLike(false)
         };
     },[favorites, artObject.objectID])
+
+
 
     const imageLoaded = (e) => {
         setExhibit({ ...exhibitTemplate,
@@ -67,11 +91,6 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
         })
     }
 
-    const preLoader = () => {
-        setExhibit(exhibitTemplate)
-        drawID()
-    }
-
     return (
     <Suspense fallback={ <LoadingSpinner />}>
         <div className="content">
@@ -80,11 +99,13 @@ const Exhibit = ({ artObject, drawID, favorites, setFavorites }) => {
             <p>{`${exhibit.artist} ${exhibit.date}`}</p>
         </div>
         <div className="action-box">
-            <button className='random' onClick={preLoader}>Random</button>
+            <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit} nav={nav}/>
             <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} like={like} setLike={setLike}/>
         </div>
     </Suspense>
     )
 }
+
+
 
 export default Exhibit

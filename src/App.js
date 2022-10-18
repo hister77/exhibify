@@ -10,6 +10,7 @@ function App() {
   const [data, setData] = useState([])
   const [artCount, setArtCount] = useState(0)
   const [params, setParams] = useState({ params: { medium: 'Paintings', hasImages: true, q: '*' } })
+  const [sessionData, setSessionData] = useState(JSON.parse(localStorage.getItem('viewed')) || [])
   const [viewCount, setViewCount] = useState(0)
   const [showHistory, setShowHistory] = useState(false)
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('liked')) || [])
@@ -22,7 +23,8 @@ function App() {
           artCount, setArtCount,
           viewCount, setViewCount,
           showHistory, setShowHistory,
-          favorites, setFavorites }}>
+          favorites, setFavorites,
+          sessionData, setSessionData }}>
         <Header />
         <Main />
       </AppContext.Provider>
