@@ -39,10 +39,12 @@ export default function Main() {
                 const currentArt = artShortObj(art_object)
                 setSessionData((art) => {
                     let arr = [...art]
-                    if(!art.find(el => el.id===currentArt.id)) arr.push(currentArt)
+                    if(!art.find(el => el.id===currentArt.id)) {
+                        setViewCount(viewCount => viewCount + 1)
+                        arr.push(currentArt)
+                    }
                     return arr
                 })
-                setViewCount(viewCount => viewCount + 1)
             }
             else {
                 timer = setTimeout(() => {

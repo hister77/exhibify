@@ -48,7 +48,7 @@ export default function Header() {
     },[favorites])
   
     const mainHeader = (showHistory, n) => {
-      const string = showHistory ? 'History' : `Exhibit ${n}`
+      const string = showHistory ? 'History' : `Exhibits viewed: ${n}`
       return <h1>{string}</h1>
     }
 
