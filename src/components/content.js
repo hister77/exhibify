@@ -33,12 +33,11 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
         }
     }
     
-    return <button className="like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
+    return <button className="template-button like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
 
 }
 
-const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit, nav }) => {
-
+const Navigator = ({ artObject, setArtID, drawID, setExhibit, nav, navPanel }) => {
 
     const handleOption = (e) => {
         
@@ -48,14 +47,14 @@ const Navigator = ({ sessionData, setArtID, drawID, artObject, setExhibit, nav }
             case 'random': drawID(); break;
             case 'prev': (nav.prev && setArtID(nav.prev.id)); break;
             case 'next': (nav.next && setArtID(nav.next.id)); break;
-            default: break;
+            default: setArtID(artObject.objectID);
         }
     }
 
     return (
     <>
-        {['prev', 'next', 'random'].map((el) => {
-            return <button key={el} id={el} className='action-button' onClick={handleOption}>{el[0].toUpperCase()+el.slice(1)}</button>
+        {navPanel.map((el) => {
+            return <button key={el} id={el} className='template-button action-button' onClick={handleOption}>{el[0].toUpperCase()+el.slice(1)}</button>
         })}
     </>
     )
@@ -69,6 +68,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
   
     const [exhibit, setExhibit] = useState(exhibitTemplate)
     const [like, setLike] = useState(false)
+    const [navPanel, setNavPanel] = useState(['random'])
 
     useEffect(() => {
         favorites.find(fav=>fav.id===artObject.objectID) && setLike(true)
@@ -77,7 +77,13 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
         };
     },[favorites, artObject.objectID])
 
-
+    useEffect(() => {
+        if(nav.next) setNavPanel(panel=>['next', ...panel])
+        if(nav.prev) setNavPanel(panel=>['prev', ...panel])
+        return () => {
+            setNavPanel(['random'])
+        }
+    }, [nav])
 
     const imageLoaded = (e) => {
         setExhibit({ ...exhibitTemplate,
@@ -99,7 +105,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
             <p>{`${exhibit.artist} ${exhibit.date}`}</p>
         </div>
         <div className="action-box">
-            <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit} nav={nav}/>
+            <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit} nav={nav} navPanel={navPanel}/>
             <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} like={like} setLike={setLike}/>
         </div>
     </Suspense>
