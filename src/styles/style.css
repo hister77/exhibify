@@ -28,7 +28,6 @@ button {
     position: absolute;
 }
 .header-middle {
-    max-width: 25%;
     left: 50%;
     bottom: 0;
     transform: translate(-50%, 0);
@@ -125,7 +124,7 @@ button {
 .action-box {
     margin: 1rem auto;
 }
-.action-box > button {
+.template-button {
     font-size: larger;
     text-align: center;
     border: 4px solid radial-gradient(circle at -4% -12.9%, rgb(74, 98, 110) 0.3%, rgb(30, 33, 48) 90.2%);
@@ -135,14 +134,14 @@ button {
     margin: auto 0.43em auto 0.43em;
     padding: 0.38em;
 }
-.action-button {
+.action-button, .hist-button {
     background: linear-gradient(109.6deg, rgb(36, 45, 57) 11.2%, rgb(16, 37, 60) 51.2%, rgb(0, 0, 0) 198.6%);
 }
 .like {
     background: linear-gradient(109.6deg, rgb(14, 11, 56) 0.2%, rgb(239, 37, 37) 91.1%);
 }
 
-.action-box> button:active {
+.our-button:active {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 
@@ -170,6 +169,12 @@ button {
     cursor: pointer;
     transform: scale(1.0);
     z-index: 1;
+}
+
+.history-action {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 footer {

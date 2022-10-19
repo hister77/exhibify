@@ -33,7 +33,7 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
         }
     }
     
-    return <button className="like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
+    return <button className="template-button like" onClick={handleLike}>{like ? 'Unlike' : 'Like'}</button>
 
 }
 
@@ -54,7 +54,7 @@ const Navigator = ({ artObject, setArtID, drawID, setExhibit, nav, navPanel }) =
     return (
     <>
         {navPanel.map((el) => {
-            return <button key={el} id={el} className='action-button' onClick={handleOption}>{el[0].toUpperCase()+el.slice(1)}</button>
+            return <button key={el} id={el} className='template-button action-button' onClick={handleOption}>{el[0].toUpperCase()+el.slice(1)}</button>
         })}
     </>
     )

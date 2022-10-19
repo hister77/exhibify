@@ -44,17 +44,21 @@ const History = ({ favorites, setArtID, setShowHistory }) => {
     }
 
     return (
-        <div className="history-wrapper">
-            {groupedLikes(lastFavs).map((col, i) => {
-                return (
-                <div key={i} className="column">
-                    {col.map((art) => artBox(art))}
-                </div>
-                )
-            })}
-        <button onClick={handleMore}>more...</button>
-        <button onClick={handleLess}>less...</button>
-        </div>
+        <>
+            <div className="history-wrapper">
+                {groupedLikes(lastFavs).map((col, i) => {
+                    return (
+                    <div key={i} className="column">
+                        {col.map((art) => artBox(art))}
+                    </div>
+                    )
+                })}
+            </div>
+            <div className="history-action">
+                <button className="template-button hist-button" onClick={handleMore}>more...</button>
+                <button className="template-button hist-button" onClick={handleLess}>less...</button>
+            </div>
+        </>
     )
 }
 
