@@ -37,6 +37,24 @@ const Like = ({ artObject, favorites, setFavorites, like, setLike }) => {
 
 }
 
+const Ban = ({ artObject, setBanned, isBanned, drawID, setExhibit }) => {
+    const val = isBanned ? 'Unban' : 'Ban' 
+    const handleBan = (e) => {
+        if(!isBanned) {
+            setBanned(arr=> [...arr, artObject.objectID])
+            setExhibit(exhibitTemplate)
+            drawID()
+            return
+        }
+        setBanned(arr => {
+            const idx = arr.findIndex(el=>el===artObject.objectID)
+            return [...arr.slice(0,idx), ...arr.slice(idx+1)]
+        })
+    }
+
+    return <button className="template-button ban" value={val} onClick={handleBan}>{val}</button>
+}
+
 const Navigator = ({ artObject, setArtID, drawID, setExhibit, nav, navPanel }) => {
 
     const handleOption = (e) => {
@@ -60,7 +78,7 @@ const Navigator = ({ artObject, setArtID, drawID, setExhibit, nav, navPanel }) =
     )
 }
 
-const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, sessionData, nav }) => {
+const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, sessionData, nav, banned, setBanned }) => {
 
     const displayImage = (art, exh) => {
         return <img src={art.primaryImage} alt={exh.title} style={ exh.style } onLoad={imageLoaded} />
@@ -69,6 +87,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
     const [exhibit, setExhibit] = useState(exhibitTemplate)
     const [like, setLike] = useState(false)
     const [navPanel, setNavPanel] = useState(['random'])
+    const [isBanned, setIsBanned] = useState(false)
 
     useEffect(() => {
         favorites.find(fav=>fav.id===artObject.objectID) && setLike(true)
@@ -84,6 +103,12 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
             setNavPanel(['random'])
         }
     }, [nav])
+
+    useEffect(() => {
+        localStorage.setItem('banned', JSON.stringify(banned))
+        if(banned.includes(artObject.objectID)) setIsBanned(true)
+        else setIsBanned(false)
+    },[banned, artObject.objectID])
 
     const imageLoaded = (e) => {
         setExhibit({ ...exhibitTemplate,
@@ -107,6 +132,7 @@ const Exhibit = ({ artObject, drawID, setArtID, favorites, setFavorites, session
         <div className="action-box">
             <Navigator sessionData={sessionData} setArtID={setArtID} drawID={drawID} artObject={artObject} setExhibit={setExhibit} nav={nav} navPanel={navPanel}/>
             <Like artObject={artObject} favorites={favorites} setFavorites={setFavorites} like={like} setLike={setLike}/>
+            <Ban artObject={artObject} setBanned={setBanned} isBanned={isBanned} drawID={drawID} setExhibit={setExhibit}/>
         </div>
     </Suspense>
     )
