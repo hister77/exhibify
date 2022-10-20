@@ -14,6 +14,7 @@ function App() {
   const [viewCount, setViewCount] = useState(0)
   const [showHistory, setShowHistory] = useState(false)
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('liked')) || [])
+  const [banned, setBanned] = useState(() => JSON.parse(localStorage.getItem('banned')) || [])
 
   return (
     <>
@@ -24,7 +25,8 @@ function App() {
           viewCount, setViewCount,
           showHistory, setShowHistory,
           favorites, setFavorites,
-          sessionData, setSessionData }}>
+          sessionData, setSessionData,
+          banned, setBanned }}>
         <Header />
         <Main />
       </AppContext.Provider>

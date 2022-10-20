@@ -137,7 +137,7 @@ button {
 .action-button, .hist-button {
     background: linear-gradient(109.6deg, rgb(36, 45, 57) 11.2%, rgb(16, 37, 60) 51.2%, rgb(0, 0, 0) 198.6%);
 }
-.like {
+.like, .ban {
     background: linear-gradient(109.6deg, rgb(14, 11, 56) 0.2%, rgb(239, 37, 37) 91.1%);
 }
 
